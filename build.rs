@@ -72,14 +72,22 @@ fn write_timezone_file(timezone_file: &mut File, table: &Table) {
     write!(timezone_file,
 "impl FromStr for Tz {{
     type Err = String;
-    fn from_str(s: &str) -> Result<Self, String> {{
-        match s {{\n").unwrap();
+    fn from_str(s: &str) -> Result<Self, String> {{\n").unwrap();
+    if cfg!(feature = "case_insensitive") {
+        write!(timezone_file, "match &s.to_ascii_lowercase()[..] {{\n").unwrap();
+    } else {
+        write!(timezone_file, "match s {{\n").unwrap();
+    }
     for zone in &zones {
         let zone_name = convert_bad_chars(zone);
+        #[cfg(feature = "case_insensitive")]
+        let raw_zone_name = zone.to_ascii_lowercase();
+        #[cfg(not(feature = "case_insensitive"))]
+        let raw_zone_name = zone;
         write!(timezone_file,
-               "            \"{raw_zone_name}\" => Ok(Tz::{zone}),\n",
-               zone = zone_name,
-               raw_zone_name = zone).unwrap();
+               "            \"{raw_zone_name}\" => Ok(Tz::{zone_name}),\n",
+               zone_name = zone_name,
+               raw_zone_name = raw_zone_name).unwrap();
     }
     write!(timezone_file,
 "             s => Err(format!(\"'{{}}' is not a valid timezone\", s.to_string()))
