@@ -144,6 +144,21 @@
 //! assert_eq!(utc.to_string(), "2016-10-21 23:00:00 UTC");
 //! # }
 //! ```
+//!
+//! You can iterate over all timezones with [`Tz::iter`]
+//!
+//! ```
+//! # extern crate chrono;
+//! # extern crate chrono_tz;
+//! use chrono_tz::Tz;
+//!
+//! # fn main() {
+//! let timezones = Tz::iter().collect::<Vec<_>>();
+//! assert!(timezones.contains(&Tz::Antarctica__South_Pole));
+//! # }
+//! ```
+//!
+//! [`Tz::iter`]: enum.Tz.html#method.iter
 
 extern crate chrono;
 

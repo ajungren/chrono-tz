@@ -69,6 +69,13 @@ fn write_timezone_file(timezone_file: &mut File, table: &Table) {
     }
     write!(timezone_file, "}}\n\n").unwrap();
 
+    write!(timezone_file, "const ALL: &[Tz] = &[\n").unwrap();
+    for zone in &zones {
+        let zone_name = convert_bad_chars(zone);
+        write!(timezone_file, "    Tz::{zone},\n", zone = zone_name).unwrap();
+    }
+    write!(timezone_file, "];\n").unwrap();
+
     write!(timezone_file,
 "impl FromStr for Tz {{
     type Err = String;
@@ -95,8 +102,15 @@ fn write_timezone_file(timezone_file: &mut File, table: &Table) {
     }}
 }}\n\n").unwrap();
 
-    write!(timezone_file,
-"impl Tz {{
+    write!(timezone_file, "impl Tz {{\n").unwrap();
+
+    write!(timezone_file, "
+    /// Returns an iterator over all timezones.
+    pub fn iter() -> impl Iterator<Item = Tz> {{
+        ALL.iter().copied()
+    }}\n").unwrap();
+
+    write!(timezone_file, "
     pub fn name(self: &Tz) -> &'static str {{
         match *self {{\n").unwrap();
     for zone in &zones {
