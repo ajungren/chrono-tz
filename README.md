@@ -117,6 +117,15 @@ let utc = dt.with_timezone(&UTC);
 assert_eq!(utc.to_string(), "2016-10-21 23:00:00 UTC");
 ```
 
+You can iterate over all timezones with `Tz::iter`
+
+```rust
+use chrono_tz::Tz;
+
+let timezones = Tz::iter().collect::<Vec<_>>();
+assert!(timezones.contains(&Tz::Antarctica__South_Pole));
+```
+
 ## Future Improvements
 
 - Handle leap seconds
